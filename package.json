@@ -1,0 +1,52 @@
+{
+    "name": "@locatorpro/playwright",
+    "version": "1.0.0",
+    "description": "Self-healing locator engine for Playwright with 35-priority intelligent selector generation",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc",
+        "dev": "tsc --watch",
+        "test": "jest",
+        "lint": "eslint src/**/*.ts",
+        "prepare": "npm run build"
+    },
+    "keywords": [
+        "playwright",
+        "automation",
+        "testing",
+        "locators",
+        "selectors",
+        "self-healing",
+        "robust"
+    ],
+    "author": "LocatorPro Team",
+    "license": "MIT",
+    "peerDependencies": {
+        "@playwright/test": "^1.40.0"
+    },
+    "devDependencies": {
+        "@playwright/test": "^1.40.0",
+        "@types/node": "^20.0.0",
+        "typescript": "^5.0.0",
+        "jest": "^29.0.0",
+        "@types/jest": "^29.0.0",
+        "ts-jest": "^29.0.0",
+        "eslint": "^8.0.0",
+        "@typescript-eslint/eslint-plugin": "^6.0.0",
+        "@typescript-eslint/parser": "^6.0.0"
+    },
+    "files": [
+        "dist/**/*",
+        "README.md",
+        "LICENSE"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/locatorpro/playwright"
+    },
+    "homepage": "https://github.com/locatorpro/playwright#readme",
+    "bugs": {
+        "url": "https://github.com/locatorpro/playwright/issues"
+    }
+}
