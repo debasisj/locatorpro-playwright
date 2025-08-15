@@ -332,18 +332,6 @@ const button = await smartLocator.findByTestId('submit');
 const text = await smartLocator.findByText('Login');
 ```
 
-### From Selenium/WebDriver
-
-```typescript
-// Before (Selenium)
-driver.findElement(By.xpath("//button[text()='Submit']"));
-driver.findElement(By.id("email-field"));
-
-// After (LocatorPro)
-const button = await smartLocator.findByText('Submit');
-const field = await smartLocator.findByTestId('email-field');
-```
-
 ## Error Handling
 
 ```typescript
@@ -383,7 +371,7 @@ MIT License - see [LICENSE](LICENSE) file for details.
 - [ ] **Enhanced Self-Healing**: Automatic strategy re-ranking based on success rates
 - [ ] **Visual Locators**: Integration with visual element recognition
 - [ ] **AI-Powered Strategies**: Machine learning-based locator generation
-- [ ] **Multi-Framework Support**: Expand to Cypress, Selenium, and others
+- [ ] **Multi-Framework Support**: Expand to Cypress and other frameworks
 - [ ] **Performance Analytics**: Built-in metrics and reporting
 - [ ] **Strategy Learning**: Adaptive algorithms that learn from your application
 
