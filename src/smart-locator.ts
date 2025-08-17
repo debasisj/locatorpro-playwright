@@ -881,8 +881,8 @@ export class SmartLocator {
     private async generateRelatedTextStrategies(element: any, relatedText: string): Promise<LocatorStrategy[]> {
         const strategies: LocatorStrategy[] = [];
 
-        // Strategy 1: Use test-id if available (most reliable)
-        if (element.id && element.id.includes('add-to-cart')) {
+        // Strategy 1: Use ID if available (most reliable)
+        if (element.id) {
             strategies.push({
                 selector: `#${element.id}`,
                 type: 'id',
