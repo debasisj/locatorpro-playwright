@@ -43,6 +43,28 @@ export interface LocatorResult {
     elementData: ElementData;
 }
 
+export interface DomElement {
+    tagName: string;
+    textContent: string;
+    innerText: string;
+    value: string;
+    id: string | null;
+    className: string | null;
+    attributes: Record<string, string>;
+    isVisible: boolean;
+    isInteractive: boolean;
+    hasTestId: boolean;
+    matchedText: string;
+    matchType: 'exact' | 'partial';
+    position: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+    };
+    score: number;
+}
+
 export interface ValidationResult {
     isValid: boolean;
     uniqueMatches: number;
