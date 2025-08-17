@@ -903,35 +903,134 @@ export class SmartLocator {
             });
         }
 
-        // Strategy 3: Use row-based CSS selector with has-text and value
+        // Strategy 3: Use name attribute for form elements
+        if (element.attributes['name']) {
+            strategies.push({
+                selector: `[name="${element.attributes['name']}"]`,
+                type: 'css',
+                priority: 3,
+                reliability: 0.9,
+                description: `Name attribute: ${element.attributes['name']}`
+            });
+        }
+
+        // Strategy 4: Use role attribute for accessibility
+        if (element.attributes['role']) {
+            strategies.push({
+                selector: `:has-text("${relatedText}") [role="${element.attributes['role']}"]`,
+                type: 'css',
+                priority: 4,
+                reliability: 0.85,
+                description: `Role attribute: ${element.attributes['role']} in container with ${relatedText}`
+            });
+        }
+
+        // Strategy 5: Use href attribute for links
+        if (element.tagName === 'a' && element.attributes['href']) {
+            strategies.push({
+                selector: `:has-text("${relatedText}") a[href="${element.attributes['href']}"]`,
+                type: 'css',
+                priority: 5,
+                reliability: 0.9,
+                description: `Link href: ${element.attributes['href']} in container with ${relatedText}`
+            });
+        }
+
+        // Strategy 6: Use alt attribute for images
+        if (element.tagName === 'img' && element.attributes['alt']) {
+            strategies.push({
+                selector: `:has-text("${relatedText}") img[alt="${element.attributes['alt']}"]`,
+                type: 'css',
+                priority: 6,
+                reliability: 0.85,
+                description: `Image alt: ${element.attributes['alt']} in container with ${relatedText}`
+            });
+        }
+
+        // Strategy 7: Use title attribute
+        if (element.attributes['title']) {
+            strategies.push({
+                selector: `:has-text("${relatedText}") [title="${element.attributes['title']}"]`,
+                type: 'css',
+                priority: 7,
+                reliability: 0.8,
+                description: `Title attribute: ${element.attributes['title']} in container with ${relatedText}`
+            });
+        }
+
+        // Strategy 8: Use placeholder for input elements
+        if (element.tagName === 'input' && element.attributes['placeholder']) {
+            strategies.push({
+                selector: `:has-text("${relatedText}") input[placeholder="${element.attributes['placeholder']}"]`,
+                type: 'css',
+                priority: 8,
+                reliability: 0.8,
+                description: `Input placeholder: ${element.attributes['placeholder']} in container with ${relatedText}`
+            });
+        }
+
+        // Strategy 9: Use type attribute for input elements
+        if (element.tagName === 'input' && element.attributes['type']) {
+            strategies.push({
+                selector: `:has-text("${relatedText}") input[type="${element.attributes['type']}"]`,
+                type: 'css',
+                priority: 9,
+                reliability: 0.75,
+                description: `Input type: ${element.attributes['type']} in container with ${relatedText}`
+            });
+        }
+
+        // Strategy 10: Use row-based CSS selector with has-text and value
         if (element.tagName === 'input' && element.value) {
             strategies.push({
                 selector: `tr:has-text("${relatedText}") input[value="${element.value}"]`,
                 type: 'css',
-                priority: 3,
+                priority: 10,
                 reliability: 0.9,
                 description: `Row-based input value: ${element.value} in row with ${relatedText}`
             });
         }
 
-        // Strategy 4: XPath with value attribute for input elements
+        // Strategy 11: XPath with value attribute for input elements
         if (element.tagName === 'input' && element.value) {
             strategies.push({
                 selector: `//*[contains(text(), "${relatedText}")]/ancestor::tr//input[@value="${element.value}"]`,
                 type: 'xpath',
-                priority: 4,
+                priority: 11,
                 reliability: 0.85,
                 description: `XPath input value: ${element.value} in row with ${relatedText}`
             });
         }
 
-        // Strategy 5: Generic container approach for non-input elements
+        // Strategy 12: CSS selector for anchor elements with text content
+        if (element.tagName === 'a' && element.textContent) {
+            strategies.push({
+                selector: `:has-text("${relatedText}") a:has-text("${element.textContent.trim()}")`,
+                type: 'css',
+                priority: 12,
+                reliability: 0.85,
+                description: `Anchor with text: ${element.textContent.trim()} in container with ${relatedText}`
+            });
+        }
+
+        // Strategy 13: XPath for anchor elements
+        if (element.tagName === 'a' && element.textContent) {
+            strategies.push({
+                selector: `//*[contains(text(), "${relatedText}")]/ancestor::*//a[contains(text(), "${element.textContent.trim()}")]`,
+                type: 'xpath',
+                priority: 13,
+                reliability: 0.8,
+                description: `XPath anchor: ${element.textContent.trim()} in container with ${relatedText}`
+            });
+        }
+
+        // Strategy 14: Generic container approach for non-input elements
         if (element.containerInfo && element.containerInfo.className) {
             const containerClass = element.containerInfo.className.split(' ')[0];
             strategies.push({
                 selector: `.${containerClass}:has-text("${relatedText}") ${element.tagName}:has-text("${element.targetText}")`,
                 type: 'css',
-                priority: 5,
+                priority: 14,
                 reliability: 0.8,
                 description: `Specific container: ${containerClass} with both texts`
             });
