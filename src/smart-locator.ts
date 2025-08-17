@@ -1137,7 +1137,7 @@ export class SmartLocator {
 
     /**
      * 🎯 ADVANCED: Find element by its relationship to specific text
-     * Perfect for finding buttons/actions related to specific items (e.g., "Add to cart" for "Sauce Labs Onesie")
+     * Perfect for finding buttons/actions related to specific items
      */
     async findByRelatedText(targetText: string, relatedText: string, options?: {
         containerTypes?: string[];
