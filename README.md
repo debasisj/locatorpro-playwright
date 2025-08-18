@@ -3,7 +3,7 @@
 > **Revolutionary Self-Healing Locator System for Playwright**  
 > Transform fragile selectors into intelligent, self-healing locators with automatic fallback strategies.
 
-[![npm version](https://badge.fury.io/js/locatorpro-playwright.svg)](https://github.com/debasisj/locatorpro-playwright)
+[![npm version](https://badge.fury.io/js/locatorpro-playwright.svg)](https://www.npmjs.com/package/locatorpro-playwright)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://github.com/debasisj/locatorpro-playwright/actions/workflows/ci.yml/badge.svg)](https://github.com/debasisj/locatorpro-playwright/actions/workflows/ci.yml)
 
