@@ -1162,14 +1162,14 @@ export class SmartLocator {
 
         } catch (error) {
             console.warn('[SmartLocator] Error generating strategies:', error);
-            
+
             // If element doesn't exist, use pattern analysis for broken selectors
             const errorMessage = error instanceof Error ? error.message : String(error);
             if (errorMessage && errorMessage.includes('Test timeout')) {
                 console.log(`🔍 Element not found, generating smart alternatives from selector pattern`);
                 return this.generateSmartAlternatives(initialSelector);
             }
-            
+
             // For other errors, return basic fallback
             return [{
                 type: 'css',
