@@ -3,10 +3,24 @@
 > **Revolutionary Self-Healing Locator System for Playwright**  
 > Transform fragile selectors into intelligent, self-healing locators with automatic fallback strategies.
 
-[![npm version](https://badge.fury.io/js/locatorpro-playwright.svg)](https://badge.fury.io/js/locatorpro-playwright)
+[![npm version](https://badge.fury.io/js/locatorpro-playwright.svg)](https://github.com/debasisj/locatorpro-playwright)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Tests](https://github.com/debasisj/locatorpro-playwright/actions/workflows/ci.yml/badge.svg)](https://github.com/debasisj/locatorpro-playwright/actions/workflows/ci.yml)
+
 
 ## 🚀 **Why LocatorPro?**
+
+**Playwright already has excellent built-in locators** like `getByRole()`, `getByText()`, and `getByTestId()` that are robust and reliable. These should be your first choice for most scenarios.
+
+**However, you need LocatorPro when:**
+- Working with **legacy applications** where you can't control the markup
+- Dealing with **dynamically generated IDs** or **changing class names**
+- Elements lack proper **test IDs** or **semantic roles**
+- You need to find elements by **contextual relationships** (e.g., "Add to Cart" button for a specific product)
+- **Migrating existing tests** with fragile selectors without rewriting everything
+- Building tests for **third-party applications** where you can't modify the HTML
+
+LocatorPro **enhances** Playwright's locators with intelligent fallbacks and contextual awareness, making your tests resilient in scenarios where standard locators fall short.
 
 **Traditional Playwright tests break when:**
 - IDs change: `#submit-btn-123` → `#submit-btn-456` ❌
@@ -413,7 +427,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 
 ### **Development Setup**
 ```bash
-git clone https://github.com/your-org/locatorpro-playwright.git
+git clone https://github.com/debasisj/locatorpro-playwright.git
 cd locatorpro-playwright
 npm install
 npm run test
