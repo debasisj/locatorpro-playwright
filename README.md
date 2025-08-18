@@ -50,6 +50,8 @@ npm install locatorpro-playwright
 # or
 yarn add locatorpro-playwright
 ```
+yarn add locatorpro-playwright
+```
 
 ---
 
