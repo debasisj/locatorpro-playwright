@@ -22,7 +22,6 @@
         "noUncheckedIndexedAccess": true,
         "exactOptionalPropertyTypes": true,
         "types": [
-            "jest",
             "node"
         ]
     },
