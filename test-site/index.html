@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LocatorPro Test Site</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px;
+            display: inline-block;
+            width: 250px;
+            vertical-align: top;
+            border-radius: 5px;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 150px;
+            background-color: #eee;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+
+        .product-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .product-price {
+            color: #e47911;
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        .size-selector {
+            margin: 10px 0;
+        }
+
+        .size-option {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 2px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            background: white;
+        }
+
+        .size-option:hover {
+            background: #f0f0f0;
+        }
+
+        .btn {
+            background: #ff9500;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px 0;
+        }
+
+        .btn:hover {
+            background: #e8850e;
+        }
+
+        .btn-secondary {
+            background: #007cba;
+        }
+
+        .btn-secondary:hover {
+            background: #005a8a;
+        }
+
+        .flight-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .flight-info {
+            flex: 1;
+        }
+
+        .airline-name {
+            font-weight: bold;
+            color: #0066cc;
+        }
+
+        .flight-details {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .flight-price {
+            font-size: 18px;
+            color: #e47911;
+            margin: 0 20px;
+        }
+
+        .form-group {
+            margin: 15px 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .cart-badge {
+            background: #e47911;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+            position: relative;
+            top: -5px;
+        }
+
+        .navigation {
+            background: #232f3e;
+            padding: 10px 0;
+            margin-bottom: 20px;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 5px 10px;
+        }
+
+        .nav-link:hover {
+            background: #37475a;
+            border-radius: 3px;
+        }
+
+        .repo-card {
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            padding: 16px;
+            margin: 10px 0;
+        }
+
+        .repo-name {
+            color: #0969da;
+            font-weight: 600;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .repo-description {
+            color: #656d76;
+            margin: 8px 0;
+        }
+
+        .repo-stats {
+            font-size: 12px;
+            color: #656d76;
+        }
+
+        .dynamic-content {
+            display: none;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 500px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Main Page Title -->
+    <h1 id="main-title">LocatorPro Test Site</h1>
+
+    <!-- Navigation -->
+    <nav class="navigation" role="navigation">
+        <a href="#home" class="nav-link" data-testid="home-link">Home</a>
+        <a href="#products" class="nav-link" data-testid="products-link">Products</a>
+        <a href="#flights" class="nav-link" data-testid="flights-link">Flights</a>
+        <a href="#repos" class="nav-link" data-testid="repos-link">Repositories</a>
+        <div style="float: right; margin-right: 20px;">
+            <span style="color: white;">Cart</span>
+            <span id="cart-count" class="cart-badge" style="display: none;">0</span>
+        </div>
+    </nav>
+
+    <!-- Login Form Section -->
+    <div class="container" id="login-section">
+        <h2>Login Form Testing</h2>
+        <form id="login-form">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="user-name" data-testid="username"
+                    placeholder="Enter your username" aria-label="Username field">
+            </div>
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" data-testid="password"
+                    placeholder="Enter your password" aria-label="Password field">
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" data-qa="email-field" placeholder="user@example.com"
+                    title="Enter valid email">
+            </div>
+            <button type="submit" id="login-btn" class="btn" data-testid="login-button" aria-label="Login submit button"
+                role="button">Login</button>
+            <button type="button" class="btn btn-secondary" data-automation="secondary-btn">Register</button>
+        </form>
+    </div>
+
+    <!-- E-commerce Product Section -->
+    <div class="container" id="products-section">
+        <h2>E-commerce Product Testing</h2>
+
+        <div class="product-card">
+            <div class="product-image">Product Image</div>
+            <div class="product-name">iPhone 15 Pro</div>
+            <div class="product-price">$999.99</div>
+            <div class="size-selector">
+                <span>Storage:</span>
+                <button class="size-option" aria-label="128GB">128GB</button>
+                <button class="size-option" aria-label="256GB">256GB</button>
+                <button class="size-option" aria-label="512GB">512GB</button>
+            </div>
+            <button class="btn" data-testid="add-to-cart-iphone">Add to Cart</button>
+        </div>
+
+        <div class="product-card">
+            <div class="product-image">Product Image</div>
+            <div class="product-name">Samsung Galaxy S24</div>
+            <div class="product-price">$899.99</div>
+            <div class="size-selector">
+                <span>Storage:</span>
+                <button class="size-option" aria-label="128GB">128GB</button>
+                <button class="size-option" aria-label="256GB">256GB</button>
+            </div>
+            <button class="btn" data-testid="add-to-cart-samsung">Add to Cart</button>
+        </div>
+
+        <div class="product-card">
+            <div class="product-image">Product Image</div>
+            <div class="product-name">Argus All-Weather Tank</div>
+            <div class="product-price">$29.99</div>
+            <div class="size-selector">
+                <span>Size:</span>
+                <button class="size-option" aria-label="S">S</button>
+                <button class="size-option" aria-label="M">M</button>
+                <button class="size-option" aria-label="L">L</button>
+                <button class="size-option" aria-label="XL">XL</button>
+            </div>
+            <button class="btn" data-testid="add-to-cart-tank">Add to Cart</button>
+        </div>
+
+        <div class="product-card">
+            <div class="product-image">Product Image</div>
+            <div class="product-name">Nike Air Max</div>
+            <div class="product-price">$149.99</div>
+            <div class="size-selector">
+                <span>Size:</span>
+                <button class="size-option" aria-label="8">8</button>
+                <button class="size-option" aria-label="9">9</button>
+                <button class="size-option" aria-label="10">10</button>
+                <button class="size-option" aria-label="11">11</button>
+            </div>
+            <button class="btn" data-testid="add-to-cart-shoes">Add to Cart</button>
+        </div>
+    </div>
+
+    <!-- Flight Booking Section -->
+    <div class="container" id="flights-section">
+        <h2>Flight Booking Testing</h2>
+
+        <div class="form-group">
+            <label for="departure">From:</label>
+            <select id="departure" name="fromPort">
+                <option value="boston">Boston</option>
+                <option value="newyork">New York</option>
+                <option value="chicago">Chicago</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="destination">To:</label>
+            <select id="destination" name="toPort">
+                <option value="london">London</option>
+                <option value="paris">Paris</option>
+                <option value="tokyo">Tokyo</option>
+            </select>
+        </div>
+
+        <button class="btn" id="search-flights">Find Flights</button>
+
+        <div id="flight-results" style="margin-top: 20px;">
+            <div class="flight-row">
+                <div class="flight-info">
+                    <div class="airline-name">Virgin America</div>
+                    <div class="flight-details">Departs: 9:00 AM - Arrives: 3:30 PM</div>
+                    <div class="flight-details">Flight: VA101 | Duration: 6h 30m</div>
+                </div>
+                <div class="flight-price">$450.00</div>
+                <input type="submit" value="Choose This Flight" class="btn" data-testid="choose-virgin">
+            </div>
+
+            <div class="flight-row">
+                <div class="flight-info">
+                    <div class="airline-name">Aer Lingus</div>
+                    <div class="flight-details">Departs: 2:15 PM - Arrives: 8:45 PM</div>
+                    <div class="flight-details">Flight: EI125 | Duration: 6h 30m</div>
+                </div>
+                <div class="flight-price">$420.00</div>
+                <input type="submit" value="Choose This Flight" class="btn" data-testid="choose-aer">
+            </div>
+
+            <div class="flight-row">
+                <div class="flight-info">
+                    <div class="airline-name">British Airways</div>
+                    <div class="flight-details">Departs: 5:45 PM - Arrives: 12:15 AM+1</div>
+                    <div class="flight-details">Flight: BA215 | Duration: 6h 30m</div>
+                </div>
+                <div class="flight-price">$380.00</div>
+                <input type="submit" value="Choose This Flight" class="btn" data-testid="choose-ba">
+            </div>
+        </div>
+    </div>
+
+    <!-- GitHub-style Repository Section -->
+    <div class="container" id="repos-section">
+        <h2>Repository Testing (GitHub-style)</h2>
+
+        <div class="repo-card">
+            <h3><a href="#" class="repo-name">locatorpro-playwright</a></h3>
+            <p class="repo-description">Smart locator library for Playwright automation with self-healing capabilities
+            </p>
+            <div class="repo-stats">
+                <span>⭐ 245</span> <span>🍴 42</span> <span>TypeScript</span>
+            </div>
+        </div>
+
+        <div class="repo-card">
+            <h3><a href="#" class="repo-name">automation-framework</a></h3>
+            <p class="repo-description">Comprehensive test automation framework with advanced reporting</p>
+            <div class="repo-stats">
+                <span>⭐ 123</span> <span>🍴 28</span> <span>JavaScript</span>
+            </div>
+        </div>
+
+        <div class="repo-card">
+            <h3><a href="#" class="repo-name">selenium-helpers</a></h3>
+            <p class="repo-description">Utility library for Selenium WebDriver with enhanced element handling</p>
+            <div class="repo-stats">
+                <span>⭐ 89</span> <span>🍴 15</span> <span>Python</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dynamic Content Section -->
+    <div class="container" id="dynamic-section">
+        <h2>Dynamic Content Testing</h2>
+        <button class="btn" id="load-dynamic">Load Dynamic Content</button>
+        <button class="btn btn-secondary" id="change-ids">Change Element IDs</button>
+
+        <div id="dynamic-content" class="dynamic-content">
+            <p>This content loaded dynamically!</p>
+            <button class="btn" id="dynamic-btn-123" data-testid="dynamic-button">Dynamic Button</button>
+        </div>
+    </div>
+
+    <!-- Broken Selector Testing -->
+    <div class="container" id="broken-selectors">
+        <h2>Broken Selector Testing</h2>
+        <p>These elements are designed to test self-healing when selectors break:</p>
+
+        <!-- Elements with IDs that will change -->
+        <button id="submit-btn-1234" class="btn">Submit Button (ID will change)</button>
+        <input type="text" id="input-field-5678" placeholder="Input field (ID will change)">
+
+        <!-- Elements that can be found by alternative strategies -->
+        <button class="old-button-class" data-testid="reliable-submit">Reliable Submit</button>
+        <input type="email" name="reliable-email" placeholder="Enter email address">
+
+        <button class="btn" id="break-selectors">Break Selectors (Simulate DOM changes)</button>
+    </div>
+
+    <!-- Modal Testing -->
+    <div id="test-modal" class="modal">
+        <div class="modal-content">
+            <h3>Modal Dialog</h3>
+            <p>This is a modal for testing overlay interactions.</p>
+            <button class="btn" id="modal-confirm">Confirm</button>
+            <button class="btn btn-secondary" id="modal-cancel">Cancel</button>
+        </div>
+    </div>
+
+    <script>
+        // Cart functionality
+        let cartCount = 0;
+        const cartBadge = document.getElementById('cart-count');
+
+        // Add to cart buttons
+        document.querySelectorAll('[data-testid^="add-to-cart"]').forEach(btn => {
+            btn.addEventListener('click', function () {
+                cartCount++;
+                cartBadge.textContent = cartCount;
+                cartBadge.style.display = 'inline';
+                this.textContent = 'Added!';
+                setTimeout(() => {
+                    this.textContent = 'Add to Cart';
+                }, 1000);
+            });
+        });
+
+        // Size selector functionality
+        document.querySelectorAll('.size-option').forEach(option => {
+            option.addEventListener('click', function () {
+                // Remove active class from siblings
+                this.parentNode.querySelectorAll('.size-option').forEach(o => {
+                    o.style.background = 'white';
+                    o.style.borderColor = '#ccc';
+                });
+                // Add active state
+                this.style.background = '#007cba';
+                this.style.color = 'white';
+                this.style.borderColor = '#007cba';
+            });
+        });
+
+        // Flight search
+        document.getElementById('search-flights').addEventListener('click', function () {
+            document.getElementById('flight-results').style.display = 'block';
+        });
+
+        // Flight selection
+        document.querySelectorAll('[data-testid^="choose-"]').forEach(btn => {
+            btn.addEventListener('click', function () {
+                alert('Flight selected: ' + this.closest('.flight-row').querySelector('.airline-name').textContent);
+            });
+        });
+
+        // Dynamic content loading
+        document.getElementById('load-dynamic').addEventListener('click', function () {
+            const dynamicDiv = document.getElementById('dynamic-content');
+            dynamicDiv.style.display = 'block';
+            dynamicDiv.innerHTML += '<p>More dynamic content loaded at ' + new Date().toLocaleTimeString() + '</p>';
+        });
+
+        // Simulate DOM changes (break selectors)
+        document.getElementById('change-ids').addEventListener('click', function () {
+            const dynamicBtn = document.getElementById('dynamic-btn-123');
+            if (dynamicBtn) {
+                dynamicBtn.id = 'dynamic-btn-' + Math.floor(Math.random() * 10000);
+            }
+        });
+
+        document.getElementById('break-selectors').addEventListener('click', function () {
+            // Change IDs to simulate broken selectors
+            const submitBtn = document.getElementById('submit-btn-1234');
+            const inputField = document.getElementById('input-field-5678');
+
+            if (submitBtn) {
+                submitBtn.id = 'submit-btn-' + Math.floor(Math.random() * 10000);
+                submitBtn.textContent = 'Submit Button (ID changed!)';
+            }
+
+            if (inputField) {
+                inputField.id = 'input-field-' + Math.floor(Math.random() * 10000);
+                inputField.placeholder = 'Input field (ID changed!)';
+            }
+        });
+
+        // Login form
+        document.getElementById('login-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username && password) {
+                alert('Login successful! Username: ' + username);
+                // Simulate page change
+                document.querySelector('h1').textContent = 'Welcome, ' + username + '!';
+            } else {
+                alert('Please fill in all fields');
+            }
+        });
+
+        // Repository links
+        document.querySelectorAll('.repo-name').forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                alert('Repository clicked: ' + this.textContent);
+            });
+        });
+
+        // Modal functionality
+        function showModal() {
+            document.getElementById('test-modal').style.display = 'block';
+        }
+
+        function hideModal() {
+            document.getElementById('test-modal').style.display = 'none';
+        }
+
+        document.getElementById('modal-confirm').addEventListener('click', hideModal);
+        document.getElementById('modal-cancel').addEventListener('click', hideModal);
+
+        // Add some elements dynamically after page load to test timing
+        setTimeout(() => {
+            const newElement = document.createElement('button');
+            newElement.className = 'btn';
+            newElement.textContent = 'Late Loading Button';
+            newElement.id = 'late-button';
+            newElement.setAttribute('data-testid', 'late-loaded');
+            document.getElementById('dynamic-section').appendChild(newElement);
+        }, 2000);
+    </script>
+</body>
+
+</html>

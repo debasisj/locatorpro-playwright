@@ -641,6 +641,156 @@ export class SmartLocator {
     /**
      * Enhance a broken locator by analyzing the selector pattern and generating alternatives
      */
+    /**
+     * Generate smart strategies for broken/non-existent selectors based on pattern analysis
+     */
+    private generateSmartAlternatives(originalSelector: string): LocatorStrategy[] {
+        const strategies: LocatorStrategy[] = [];
+        let priority = 1;
+
+        // Keep original selector (might work in the future)
+        strategies.push({
+            type: 'css',
+            selector: originalSelector,
+            priority: priority++,
+            description: `Original selector (may be fixed): ${originalSelector}`,
+            reliability: 0.3
+        });
+
+        // Analyze the selector pattern and generate smart alternatives
+        console.log(`🔍 Analyzing broken selector pattern: ${originalSelector}`);
+
+        // Pattern 1: ID selector (#submit-btn-1234) - look for similar IDs or button patterns
+        if (originalSelector.startsWith('#')) {
+            const idName = originalSelector.substring(1);
+            console.log(`📍 ID pattern detected: ${idName}`);
+
+            // Try to find buttons with similar text content
+            if (idName.includes('submit')) {
+                strategies.push({
+                    type: 'text',
+                    selector: 'Submit',
+                    priority: priority++,
+                    description: 'Submit button by text (inferred from ID)',
+                    reliability: 0.8
+                });
+
+                strategies.push({
+                    type: 'css',
+                    selector: 'button[type="submit"]',
+                    priority: priority++,
+                    description: 'Submit button by type (inferred from ID)',
+                    reliability: 0.75
+                });
+
+                strategies.push({
+                    type: 'css',
+                    selector: 'input[type="submit"]',
+                    priority: priority++,
+                    description: 'Submit input by type (inferred from ID)',
+                    reliability: 0.7
+                });
+            }
+
+            // Try partial ID matches
+            const baseId = idName.replace(/[-_]\d+$/, ''); // Remove trailing numbers
+            if (baseId !== idName) {
+                strategies.push({
+                    type: 'css',
+                    selector: `[id^="${baseId}"]`,
+                    priority: priority++,
+                    description: `Partial ID match: starts with ${baseId}`,
+                    reliability: 0.6
+                });
+            }
+        }
+
+        // Pattern 2: Class selector - look for similar patterns
+        else if (originalSelector.startsWith('.')) {
+            const className = originalSelector.substring(1);
+            console.log(`📍 Class pattern detected: ${className}`);
+
+            // Try partial class matches
+            strategies.push({
+                type: 'css',
+                selector: `[class*="${className}"]`,
+                priority: priority++,
+                description: `Partial class match: contains ${className}`,
+                reliability: 0.5
+            });
+        }
+
+        // Pattern 3: Data attribute selector - try variations
+        else if (originalSelector.includes('data-')) {
+            console.log(`📍 Data attribute pattern detected`);
+
+            const dataMatch = originalSelector.match(/data-([^=\]]+)="?([^"\]]+)"?/);
+            if (dataMatch) {
+                const [, attrName, attrValue] = dataMatch;
+
+                // Try different data attribute variations
+                strategies.push({
+                    type: 'css',
+                    selector: `[data-testid="${attrValue}"]`,
+                    priority: priority++,
+                    description: `Data-testid variation: ${attrValue}`,
+                    reliability: 0.8
+                });
+
+                strategies.push({
+                    type: 'css',
+                    selector: `[data-test="${attrValue}"]`,
+                    priority: priority++,
+                    description: `Data-test variation: ${attrValue}`,
+                    reliability: 0.8
+                });
+            }
+        }
+
+        // Pattern 4: Generic fallbacks based on common element types
+        console.log(`🔍 Adding generic fallbacks for common interactions`);
+
+        // Common button patterns (avoid duplicates)
+        const hasSubmitText = strategies.some(s => s.selector === 'Submit');
+        const hasSubmitType = strategies.some(s => s.selector === 'button[type="submit"]');
+
+        if (!hasSubmitText) {
+            strategies.push({
+                type: 'text',
+                selector: 'Submit',
+                priority: priority++,
+                description: 'Generic submit button',
+                reliability: 0.4
+            });
+        }
+
+        strategies.push({
+            type: 'text',
+            selector: 'Save',
+            priority: priority++,
+            description: 'Generic save button',
+            reliability: 0.4
+        });
+
+        if (!hasSubmitType) {
+            strategies.push({
+                type: 'css',
+                selector: 'button[type="submit"]',
+                priority: priority++,
+                description: 'Any submit button',
+                reliability: 0.4
+            });
+        }
+
+        console.log(`🎯 Generated ${strategies.length} smart alternatives for broken locator`);
+        strategies.forEach((strategy, idx) => {
+            console.log(`   ${idx + 1}. [${strategy.type}] ${strategy.selector} (reliability: ${strategy.reliability})`);
+            console.log(`      ${strategy.description}`);
+        });
+
+        return strategies;
+    }
+
     private async enhanceBrokenLocator(originalSelector: string): Promise<Locator> {
         const strategies: LocatorStrategy[] = [];
         let priority = 1;
@@ -913,17 +1063,11 @@ export class SmartLocator {
      */
     private async generateStrategiesForSelector(initialSelector: string): Promise<LocatorStrategy[]> {
         try {
-            // Find the element first
-            const element = await this.page.locator(initialSelector).first().elementHandle();
+            // Try to find the element with a short timeout to avoid hanging
+            const element = await this.page.locator(initialSelector).first().elementHandle({ timeout: 2000 });
             if (!element) {
-                // Return basic strategy if element not found
-                return [{
-                    type: 'css',
-                    selector: initialSelector,
-                    priority: 1,
-                    description: 'Original selector',
-                    reliability: 0.5
-                }];
+                // Element not found, use pattern analysis for broken selectors
+                return this.generateSmartAlternatives(initialSelector);
             }
 
             // Use the engine to generate comprehensive strategies
@@ -1018,6 +1162,15 @@ export class SmartLocator {
 
         } catch (error) {
             console.warn('[SmartLocator] Error generating strategies:', error);
+            
+            // If element doesn't exist, use pattern analysis for broken selectors
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            if (errorMessage && errorMessage.includes('Test timeout')) {
+                console.log(`🔍 Element not found, generating smart alternatives from selector pattern`);
+                return this.generateSmartAlternatives(initialSelector);
+            }
+            
+            // For other errors, return basic fallback
             return [{
                 type: 'css',
                 selector: initialSelector,
@@ -1070,6 +1223,11 @@ export class SmartLocator {
                 if (strategy.selector.startsWith('text=')) {
                     const text = strategy.selector.substring(5);
                     return this.page.getByText(text);
+                }
+                // For interactive elements, prefer button/input/a tags to avoid heading conflicts
+                const commonInteractiveTexts = ['Login', 'Submit', 'Save', 'Cancel', 'Delete', 'Edit', 'Add', 'Remove'];
+                if (commonInteractiveTexts.includes(strategy.selector)) {
+                    return this.page.locator(`button:has-text("${strategy.selector}"), input[value="${strategy.selector}"], a:has-text("${strategy.selector}")`);
                 }
                 return this.page.getByText(strategy.selector);
 
@@ -1190,7 +1348,11 @@ export class SmartLocator {
                                 targetElement.hasAttribute('onclick') ||
                                 targetElement.hasAttribute('role');
 
-                            if (isVisible && isInteractive) {
+                            // For text-based searches, also include visible text elements (not just interactive ones)
+                            const isTextElement = ['DIV', 'SPAN', 'P', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'TD', 'TH'].includes(targetElement.tagName);
+                            const isValidTarget = isVisible && (isInteractive || (isTextElement && isTargetByText));
+
+                            if (isValidTarget) {
                                 // Calculate container specificity score
                                 const containerTextLength = elementText.length;
                                 const relatedTextOccurrences = (elementText.match(new RegExp(relatedText, 'g')) || []).length;
@@ -1269,7 +1431,18 @@ export class SmartLocator {
             });
         }
 
-        // Strategy 2: Use data-test attribute if available
+        // Strategy 2: Use data-testid attribute if available
+        if (element.attributes['data-testid']) {
+            strategies.push({
+                selector: `[data-testid="${element.attributes['data-testid']}"]`,
+                type: 'css',
+                priority: 2,
+                reliability: 0.95,
+                description: `Data-testid: ${element.attributes['data-testid']}`
+            });
+        }
+
+        // Strategy 2b: Use data-test attribute if available (fallback)
         if (element.attributes['data-test']) {
             strategies.push({
                 selector: `[data-test="${element.attributes['data-test']}"]`,
@@ -1410,6 +1583,29 @@ export class SmartLocator {
                 priority: 14,
                 reliability: 0.8,
                 description: `Specific container: ${containerClass} with both texts`
+            });
+        }
+
+        // Strategy 15: Text-based strategy for buttons and clickable elements
+        if ((element.tagName === 'button' || element.tagName === 'a' || element.tagName === 'input') && element.textContent) {
+            strategies.push({
+                selector: `:has-text("${relatedText}") ${element.tagName}:has-text("${element.textContent.trim()}")`,
+                type: 'css',
+                priority: 15,
+                reliability: 0.85,
+                description: `Text-based ${element.tagName}: ${element.textContent.trim()} in container with ${relatedText}`
+            });
+        }
+
+        // Strategy 16: Generic CSS selector with class and text
+        if (element.className && element.textContent) {
+            const firstClass = element.className.split(' ')[0];
+            strategies.push({
+                selector: `:has-text("${relatedText}") .${firstClass}:has-text("${element.textContent.trim()}")`,
+                type: 'css',
+                priority: 16,
+                reliability: 0.8,
+                description: `Class-based: .${firstClass} with text "${element.textContent.trim()}" in container with ${relatedText}`
             });
         }
 

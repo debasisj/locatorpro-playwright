@@ -8,6 +8,9 @@ coverage/
 .vscode/
 .idea/
 *.tgz
+test-results/
+playwright-report/
+playwright/.auth/
 *.tar.gz
 test-results/
 playwright-report/
