@@ -427,7 +427,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guid
 
 ### **Development Setup**
 ```bash
-git clone https://github.com/your-org/locatorpro-playwright.git
+git clone https://github.com/debasisj/locatorpro-playwright.git
 cd locatorpro-playwright
 npm install
 npm run test
