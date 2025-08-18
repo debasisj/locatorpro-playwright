@@ -1,6 +1,6 @@
 {
     "name": "locatorpro-playwright",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Self-healing locator engine for Playwright with 35-priority intelligent selector generation",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -41,10 +41,10 @@
     ],
     "repository": {
         "type": "git",
-        "url": "https://github.com/locatorpro/playwright"
+        "url": "git+https://github.com/debasisj/locatorpro-playwright.git"
     },
-    "homepage": "https://github.com/locatorpro/playwright#readme",
+    "homepage": "https://github.com/debasisj/locatorpro-playwright#readme",
     "bugs": {
-        "url": "https://github.com/locatorpro/playwright/issues"
+        "url": "https://github.com/debasisj/locatorpro-playwright/issues"
     }
 }
