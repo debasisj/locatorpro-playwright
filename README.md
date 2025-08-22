@@ -3,7 +3,7 @@
 > **Revolutionary Self-Healing Locator System for Playwright**  
 > Transform fragile selectors into intelligent, self-healing locators with automatic fallback strategies.
 
-[![npm version](https://badge.fury.io/js/locatorpro-playwright.svg)](https://www.npmjs.com/package/locatorpro-playwright)
+[![npm version](https://img.shields.io/npm/v/locatorpro-playwright.svg)](https://www.npmjs.com/package/locatorpro-playwright)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Tests](https://github.com/debasisj/locatorpro-playwright/actions/workflows/ci.yml/badge.svg)](https://github.com/debasisj/locatorpro-playwright/actions/workflows/ci.yml)
 
@@ -437,7 +437,7 @@ npm run test
 
 ## � **Changelog**
 
-### **v2.0.0** - Latest Release 🎉
+### **v1.0.1** - Latest Release 🎉
 - ✅ **Revolutionary `findByRelatedText()`** - Container-based element selection
 - ✅ **Enhanced `enhanceLocator()`** - Handles broken selectors with pattern analysis
 - ✅ **Smart Actions API** - `smartClick()`, `smartFill()`, `smartExpected()`
@@ -445,7 +445,7 @@ npm run test
 - ✅ **Auto-enhancement** - Try original first, enhance if needed
 - ✅ **Real-world validation** - Tested on major e-commerce and travel sites
 
-### **v1.x.x** - Foundation
+### **v1.0.0** - Foundation
 - ✅ Basic self-healing locators
 - ✅ Text-based element discovery  
 - ✅ Test ID enhancements
