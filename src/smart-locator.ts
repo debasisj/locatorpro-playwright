@@ -1165,7 +1165,7 @@ export class SmartLocator {
 
             // If element doesn't exist, use pattern analysis for broken selectors
             const errorMessage = error instanceof Error ? error.message : String(error);
-            if (errorMessage && errorMessage.includes('Test timeout')) {
+            if (errorMessage && (errorMessage.includes('Timeout') || errorMessage.includes('TimeoutError'))) {
                 console.log(`🔍 Element not found, generating smart alternatives from selector pattern`);
                 return this.generateSmartAlternatives(initialSelector);
             }
@@ -1184,6 +1184,37 @@ export class SmartLocator {
     /**
      * Create a self-healing locator that tries multiple strategies
      */
+    /**
+     * Escape special characters in text for CSS selector usage
+     */
+    private escapeTextForCSS(text: string): string {
+        // Escape quotes and backslashes for CSS selectors
+        return text
+            .replace(/\\/g, '\\\\')  // Escape backslashes first
+            .replace(/'/g, "\\'")    // Escape single quotes
+            .replace(/"/g, '\\"');   // Escape double quotes
+    }
+
+    /**
+     * Escape special characters in text for XPath usage
+     */
+    private escapeTextForXPath(text: string): string {
+        // For XPath, we need to handle quotes specially
+        if (text.includes('"') && text.includes("'")) {
+            // If text contains both single and double quotes, use concat()
+            const parts = text.split('"').map((part, index) => 
+                index === 0 ? `"${part}"` : `'"', "${part}"`
+            );
+            return `concat(${parts.join(', ')})`;
+        } else if (text.includes('"')) {
+            // If text contains double quotes, wrap with single quotes
+            return `'${text}'`;
+        } else {
+            // Default: wrap with double quotes
+            return `"${text}"`;
+        }
+    }
+
     private createSelfHealingLocator(strategies: LocatorStrategy[]): Locator {
         if (strategies.length === 0) {
             throw new Error('No strategies available for locator');
@@ -1222,14 +1253,15 @@ export class SmartLocator {
             case 'text':
                 if (strategy.selector.startsWith('text=')) {
                     const text = strategy.selector.substring(5);
-                    return this.page.getByText(text);
+                    return this.page.getByText(text, { exact: false });
                 }
                 // For interactive elements, prefer button/input/a tags to avoid heading conflicts
                 const commonInteractiveTexts = ['Login', 'Submit', 'Save', 'Cancel', 'Delete', 'Edit', 'Add', 'Remove'];
                 if (commonInteractiveTexts.includes(strategy.selector)) {
-                    return this.page.locator(`button:has-text("${strategy.selector}"), input[value="${strategy.selector}"], a:has-text("${strategy.selector}")`);
+                    const escapedText = this.escapeTextForCSS(strategy.selector);
+                    return this.page.locator(`button:has-text("${escapedText}"), input[value="${escapedText}"], a:has-text("${escapedText}")`);
                 }
-                return this.page.getByText(strategy.selector);
+                return this.page.getByText(strategy.selector, { exact: false });
 
             case 'role':
                 const roleMatch = strategy.selector.match(/\[role="([^"]+)"\]/);
@@ -1466,8 +1498,9 @@ export class SmartLocator {
 
         // Strategy 4: Use role attribute for accessibility
         if (element.attributes['role']) {
+            const escapedRelatedText = this.escapeTextForCSS(relatedText);
             strategies.push({
-                selector: `:has-text("${relatedText}") [role="${element.attributes['role']}"]`,
+                selector: `:has-text("${escapedRelatedText}") [role="${element.attributes['role']}"]`,
                 type: 'css',
                 priority: 4,
                 reliability: 0.85,
@@ -1477,8 +1510,9 @@ export class SmartLocator {
 
         // Strategy 5: Use href attribute for links
         if (element.tagName === 'a' && element.attributes['href']) {
+            const escapedRelatedText = this.escapeTextForCSS(relatedText);
             strategies.push({
-                selector: `:has-text("${relatedText}") a[href="${element.attributes['href']}"]`,
+                selector: `:has-text("${escapedRelatedText}") a[href="${element.attributes['href']}"]`,
                 type: 'css',
                 priority: 5,
                 reliability: 0.9,
@@ -1488,8 +1522,9 @@ export class SmartLocator {
 
         // Strategy 6: Use alt attribute for images
         if (element.tagName === 'img' && element.attributes['alt']) {
+            const escapedRelatedText = this.escapeTextForCSS(relatedText);
             strategies.push({
-                selector: `:has-text("${relatedText}") img[alt="${element.attributes['alt']}"]`,
+                selector: `:has-text("${escapedRelatedText}") img[alt="${element.attributes['alt']}"]`,
                 type: 'css',
                 priority: 6,
                 reliability: 0.85,
@@ -1499,8 +1534,9 @@ export class SmartLocator {
 
         // Strategy 7: Use title attribute
         if (element.attributes['title']) {
+            const escapedRelatedText = this.escapeTextForCSS(relatedText);
             strategies.push({
-                selector: `:has-text("${relatedText}") [title="${element.attributes['title']}"]`,
+                selector: `:has-text("${escapedRelatedText}") [title="${element.attributes['title']}"]`,
                 type: 'css',
                 priority: 7,
                 reliability: 0.8,
@@ -1510,8 +1546,9 @@ export class SmartLocator {
 
         // Strategy 8: Use placeholder for input elements
         if (element.tagName === 'input' && element.attributes['placeholder']) {
+            const escapedRelatedText = this.escapeTextForCSS(relatedText);
             strategies.push({
-                selector: `:has-text("${relatedText}") input[placeholder="${element.attributes['placeholder']}"]`,
+                selector: `:has-text("${escapedRelatedText}") input[placeholder="${element.attributes['placeholder']}"]`,
                 type: 'css',
                 priority: 8,
                 reliability: 0.8,
@@ -1521,8 +1558,9 @@ export class SmartLocator {
 
         // Strategy 9: Use type attribute for input elements
         if (element.tagName === 'input' && element.attributes['type']) {
+            const escapedRelatedText = this.escapeTextForCSS(relatedText);
             strategies.push({
-                selector: `:has-text("${relatedText}") input[type="${element.attributes['type']}"]`,
+                selector: `:has-text("${escapedRelatedText}") input[type="${element.attributes['type']}"]`,
                 type: 'css',
                 priority: 9,
                 reliability: 0.75,
@@ -1532,8 +1570,9 @@ export class SmartLocator {
 
         // Strategy 10: Use row-based CSS selector with has-text and value
         if (element.tagName === 'input' && element.value) {
+            const escapedRelatedText = this.escapeTextForCSS(relatedText);
             strategies.push({
-                selector: `tr:has-text("${relatedText}") input[value="${element.value}"]`,
+                selector: `tr:has-text("${escapedRelatedText}") input[value="${element.value}"]`,
                 type: 'css',
                 priority: 10,
                 reliability: 0.9,
@@ -1543,8 +1582,10 @@ export class SmartLocator {
 
         // Strategy 11: XPath with value attribute for input elements
         if (element.tagName === 'input' && element.value) {
+            const escapedRelatedText = this.escapeTextForXPath(relatedText);
+            const escapedValue = this.escapeTextForXPath(element.value);
             strategies.push({
-                selector: `//*[contains(text(), "${relatedText}")]/ancestor::tr//input[@value="${element.value}"]`,
+                selector: `//*[contains(text(), ${escapedRelatedText})]/ancestor::tr//input[@value=${escapedValue}]`,
                 type: 'xpath',
                 priority: 11,
                 reliability: 0.85,
@@ -1554,8 +1595,10 @@ export class SmartLocator {
 
         // Strategy 12: CSS selector for anchor elements with text content
         if (element.tagName === 'a' && element.textContent) {
+            const escapedRelatedText = this.escapeTextForCSS(relatedText);
+            const escapedTextContent = this.escapeTextForCSS(element.textContent.trim());
             strategies.push({
-                selector: `:has-text("${relatedText}") a:has-text("${element.textContent.trim()}")`,
+                selector: `:has-text("${escapedRelatedText}") a:has-text("${escapedTextContent}")`,
                 type: 'css',
                 priority: 12,
                 reliability: 0.85,
@@ -1565,8 +1608,10 @@ export class SmartLocator {
 
         // Strategy 13: XPath for anchor elements
         if (element.tagName === 'a' && element.textContent) {
+            const escapedRelatedText = this.escapeTextForXPath(relatedText);
+            const escapedTextContent = this.escapeTextForXPath(element.textContent.trim());
             strategies.push({
-                selector: `//*[contains(text(), "${relatedText}")]/ancestor::*//a[contains(text(), "${element.textContent.trim()}")]`,
+                selector: `//*[contains(text(), ${escapedRelatedText})]/ancestor::*//a[contains(text(), ${escapedTextContent})]`,
                 type: 'xpath',
                 priority: 13,
                 reliability: 0.8,
@@ -1588,8 +1633,10 @@ export class SmartLocator {
 
         // Strategy 15: Text-based strategy for buttons and clickable elements
         if ((element.tagName === 'button' || element.tagName === 'a' || element.tagName === 'input') && element.textContent) {
+            const escapedRelatedText = this.escapeTextForCSS(relatedText);
+            const escapedElementText = this.escapeTextForCSS(element.textContent.trim());
             strategies.push({
-                selector: `:has-text("${relatedText}") ${element.tagName}:has-text("${element.textContent.trim()}")`,
+                selector: `:has-text("${escapedRelatedText}") ${element.tagName}:has-text("${escapedElementText}")`,
                 type: 'css',
                 priority: 15,
                 reliability: 0.85,
@@ -1600,8 +1647,10 @@ export class SmartLocator {
         // Strategy 16: Generic CSS selector with class and text
         if (element.className && element.textContent) {
             const firstClass = element.className.split(' ')[0];
+            const escapedRelatedText = this.escapeTextForCSS(relatedText);
+            const escapedElementText = this.escapeTextForCSS(element.textContent.trim());
             strategies.push({
-                selector: `:has-text("${relatedText}") .${firstClass}:has-text("${element.textContent.trim()}")`,
+                selector: `:has-text("${escapedRelatedText}") .${firstClass}:has-text("${escapedElementText}")`,
                 type: 'css',
                 priority: 16,
                 reliability: 0.8,
