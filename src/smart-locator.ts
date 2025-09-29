@@ -1202,10 +1202,19 @@ export class SmartLocator {
         // For XPath, we need to handle quotes specially
         if (text.includes('"') && text.includes("'")) {
             // If text contains both single and double quotes, use concat()
-            const parts = text.split('"').map((part, index) => 
-                index === 0 ? `"${part}"` : `'"', "${part}"`
-            );
-            return `concat(${parts.join(', ')})`;
+            // Split on double quotes, wrap each part in single quotes, and insert '"' between parts
+            const parts = text.split('"');
+            const xpathParts: string[] = [];
+            for (let i = 0; i < parts.length; i++) {
+                if (parts[i] !== '') {
+                    xpathParts.push(`'${parts[i]}'`);
+                }
+                // Add the double quote character between parts, except after the last part
+                if (i < parts.length - 1) {
+                    xpathParts.push('"\""');
+                }
+            }
+            return `concat(${xpathParts.join(', ')})`;
         } else if (text.includes('"')) {
             // If text contains double quotes, wrap with single quotes
             return `'${text}'`;
