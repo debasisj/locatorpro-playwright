@@ -1262,7 +1262,7 @@ export class SmartLocator {
             case 'text':
                 if (strategy.selector.startsWith('text=')) {
                     const text = strategy.selector.substring(5);
-                    return this.page.getByText(text, { exact: false });
+                    return this.page.getByText(text); // Use exact matching (Playwright default)
                 }
                 // For interactive elements, prefer button/input/a tags to avoid heading conflicts
                 const commonInteractiveTexts = ['Login', 'Submit', 'Save', 'Cancel', 'Delete', 'Edit', 'Add', 'Remove'];
@@ -1270,7 +1270,7 @@ export class SmartLocator {
                     const escapedText = this.escapeTextForCSS(strategy.selector);
                     return this.page.locator(`button:has-text("${escapedText}"), input[value="${escapedText}"], a:has-text("${escapedText}")`);
                 }
-                return this.page.getByText(strategy.selector, { exact: false });
+                return this.page.getByText(strategy.selector); // Use exact matching (Playwright default)
 
             case 'role':
                 const roleMatch = strategy.selector.match(/\[role="([^"]+)"\]/);

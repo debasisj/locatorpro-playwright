@@ -82,7 +82,7 @@ test.describe('Special Characters Handling', () => {
 
         // This should work with the findByRelatedText method
         const addButton = await smartLocator.findByRelatedText(
-            'Add to Cart', 
+            'Add to Cart',
             'Special Product: "John\'s Best" - 100% Organic'
         );
         await expect(addButton).toBeVisible();
